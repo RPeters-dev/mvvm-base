@@ -30,7 +30,7 @@ namespace MVVM.Base.ViewModel._Attributes_
         {
             foreach (var item in vm.GetType().GetPropertiesWithAttributes<DependencyAttribute>())
             {
-                vm.AddDependency(item.Property.Name, item.Attributes.SelectMany(x => x.Dependencies).ToArray());
+                vm.AddSupplier(item.Property.Name, item.Attributes.SelectMany(x => x.Dependencies).ToArray());
             }
         }
     }

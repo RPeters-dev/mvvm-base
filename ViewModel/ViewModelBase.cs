@@ -160,29 +160,28 @@ namespace MVVM.Base
         /// Raise the <see cref="INotifyPropertyChanged"/> event
         /// </summary>
         /// <param name="p"></param>
-        public void RaisePropertyChanged([CallerMemberName] string p = "") => RaisePropertyChanged(p);
+        public void RaisePropertyChanged([CallerMemberName] string p = "") => RaisePropertyChanged(p, null, null);
 
         /// Raise the <see cref="INotifyPropertyChanged"/> event with <see cref="ExtendedPropertyChangedEventArgs"/>
         public void RaisePropertyChanged([CallerMemberName] string _propertyName = "", object oldValue = null, object newValue = null)
         {
+            var pce = new ExtendedPropertyChangedEventArgs(_propertyName, oldValue, newValue);
             if (_propertyChanged != null)
             {
-                var pce = new ExtendedPropertyChangedEventArgs(_propertyName, oldValue, newValue);
                 _propertyChanged(this, pce);
-
-                if (Dependencies.TryGetValue(_propertyName, out var result))
+            }
+            if (Dependencies.TryGetValue(_propertyName, out var result))
+            {
+                foreach (var item in result)
                 {
-                    foreach (var item in result)
-                    {
-                        RaisePropertyChanged(item);
-                    }
+                    RaisePropertyChanged(item);
                 }
-                if (PropertyChangedActions.TryGetValue(_propertyName, out var dp))
+            }
+            if (PropertyChangedActions.TryGetValue(_propertyName, out var dp))
+            {
+                foreach (var item in dp)
                 {
-                    foreach (var item in dp)
-                    {
-                        item.Invoke(this, pce);
-                    }
+                    item.Invoke(this, pce);
                 }
             }
         }
@@ -264,6 +263,6 @@ namespace MVVM.Base
 
 
         public virtual void Initialized()
-        { } 
+        { }
     }
 }
