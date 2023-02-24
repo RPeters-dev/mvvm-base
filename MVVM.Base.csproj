@@ -49,6 +49,8 @@
     <Compile Include="Command\%28Base%29\Command.cs" />
     <Compile Include="Command\%28Base%29\MarkupCommand.cs" />
     <Compile Include="Command\%28Base%29\MarkupCommand1.cs" />
+    <Compile Include="Command\%28Event%29\EventBinder.cs" />
+    <Compile Include="Command\%28Event%29\EventCommand.cs" />
     <Compile Include="Command\RefeshViewItem.cs" />
     <Compile Include="Converter\%28Base%29\MarkupExtensionConverter.cs" />
     <Compile Include="Converter\BooleanConverter.cs" />

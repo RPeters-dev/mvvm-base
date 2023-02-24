@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MVVM.Base.ViewModel
 {
@@ -12,6 +8,8 @@ namespace MVVM.Base.ViewModel
     /// </summary>
     public class ExtendedPropertyChangedEventArgs : PropertyChangedEventArgs
     {
+
+        public Stack<string> Route = new Stack<string>();
 
         /// <summary>
         /// initializes a new instance of <see cref="ExtendedPropertyChangedEventArgs"/>

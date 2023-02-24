@@ -4,10 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Windows.Markup;
 using MVVM.Base.Models;
 using MVVM.Base.ViewModel;
-using MVVM.Base.ViewModel._Attributes_;
 
 namespace MVVM.Base
 {
@@ -38,7 +36,6 @@ namespace MVVM.Base
         /// </summary>
         public Dictionary<string, object> Values { get; private set; } = new Dictionary<string, object>();
 
-
         public Dictionary<string, List<Action<ViewModelBase, PropertyChangedEventArgs>>> PropertyChangedActions { get; private set; }
             = new Dictionary<string, List<Action<ViewModelBase, PropertyChangedEventArgs>>>();
 
@@ -47,8 +44,9 @@ namespace MVVM.Base
         /// </summary>
         static ViewModelBase()
         {
-            Initializers = Assembly.GetAssembly(typeof(ViewModelBase)).GetTypes().Select(t => new { t, attributres = t.GetCustomAttributes<ViewModelInitializerAttribute>() })
-                .Where(t => t.attributres.Any()).SelectMany(t => t.t.GetMethods().Where(m => m.GetCustomAttributes<ViewModelInitializerAttribute>().Any())).ToArray();
+            Initializers  = Assembly.GetAssembly(typeof(ViewModelBase)).GetTypes().Select(t => new { t, attributres = t.GetCustomAttributes<ViewModelInitializerAttribute>() })
+                .Where(t => t.attributres.Any()).SelectMany(t => t.t.GetMethods().Select(m => new { m, a = m.GetCustomAttributes<ViewModelInitializerAttribute>().FirstOrDefault() }))
+                .Where(x => x.a != null).OrderBy(x => x.a.Order).Select(x => x.m).ToArray();
         }
 
 
@@ -58,7 +56,26 @@ namespace MVVM.Base
         public ViewModelBase()
         {
             RunInitializer();
+            PropertyChanged += ViewModelBase_PropertyChanged;
             Initialized();
+        }
+
+        private void ViewModelBase_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (Dependencies.TryGetValue(e.PropertyName, out var result))
+            {
+                foreach (var item in result)
+                {
+                    RaisePropertyChanged(item);
+                }
+            }
+            if (PropertyChangedActions.TryGetValue(e.PropertyName, out var dp))
+            {
+                foreach (var item in dp)
+                {
+                    item.Invoke(this, e);
+                }
+            }
         }
 
         /// <summary>
@@ -120,15 +137,20 @@ namespace MVVM.Base
         public void ForwardProperyChanged(INotifyPropertyChanged source)
         {
             if (source != null)
+            {
                 source.PropertyChanged += ForwardPropertyChanged;
+            }
         }
 
         /// <summary>
         /// Forwards a <see cref="INotifyPropertyChanged"/> event to the current instance
         /// </summary>
         /// <param name="source">property whose <see cref="INotifyPropertyChanged"/> events will be forwarded</param>
-        public void ForwardProperyChanged(string name)
+        public void ForwardProperyChanged(string name, params string[] properties)
         {
+            if (properties.Any())
+                SetProperty(properties, nameof(ForwardProperyChanged)+"." + name);
+
             UpdateForwardProperyChanged(this, new ExtendedPropertyChangedEventArgs(name, null, GetProperty<object>(name)));
 
             AddPropertyChangedAction(name, UpdateForwardProperyChanged);
@@ -142,9 +164,13 @@ namespace MVVM.Base
             if (e is ExtendedPropertyChangedEventArgs epc)
             {
                 if (epc.OldValue is INotifyPropertyChanged ov)
+                {
                     ov.PropertyChanged -= obj.ForwardPropertyChanged;
+                }
                 if (epc.NewValue is INotifyPropertyChanged nv)
+                {
                     nv.PropertyChanged += obj.ForwardPropertyChanged;
+                }
             }
         }
 
@@ -170,20 +196,6 @@ namespace MVVM.Base
             {
                 _propertyChanged(this, pce);
             }
-            if (Dependencies.TryGetValue(_propertyName, out var result))
-            {
-                foreach (var item in result)
-                {
-                    RaisePropertyChanged(item);
-                }
-            }
-            if (PropertyChangedActions.TryGetValue(_propertyName, out var dp))
-            {
-                foreach (var item in dp)
-                {
-                    item.Invoke(this, pce);
-                }
-            }
         }
 
         /// <summary>
@@ -202,6 +214,18 @@ namespace MVVM.Base
         {
             if (_propertyChanged != null)
             {
+                string senderName = Values.FirstOrDefault(x => x.Value.Equals(sender)).Key;
+                if (senderName != null &&
+                    GetProperty<string[]>(nameof(ForwardProperyChanged)+ "." + senderName) is string[] ps
+                    && ps.Length > 0
+                    && !ps.Contains(e.PropertyName))
+                {
+                    return;
+                }
+
+                if (senderName != null && e is ExtendedPropertyChangedEventArgs ex)
+                    ex.Route.Push(senderName);
+
                 _propertyChanged(sender, e);
             }
         }

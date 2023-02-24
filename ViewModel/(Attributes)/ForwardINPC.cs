@@ -1,27 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MVVM.Base.Extensions;
 
-namespace MVVM.Base.ViewModel._Attributes_
+namespace MVVM.Base.ViewModel
 {
     /// <summary>
     /// Adds a NotifyPropertyChanged forwarding to the Property
     /// </summary>
-    [System.AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
     [ViewModelInitializer]
-    public class ForwardINPCAttribute : Attribute
+    public class ForwardAttribute : Attribute
     {
+        public string[] ForwardedProperties { get; }
+
+        public ForwardAttribute(params string[] forwardedProperties)
+        {
+            ForwardedProperties=forwardedProperties;
+        }
 
         [ViewModelInitializer]
         public static void Initialize(ViewModelBase vm)
         {
-            foreach (var item in vm.GetType().GetPropertiesWithAttributes<ForwardINPCAttribute>())
+            foreach (var item in vm.GetType().GetPropertiesWithAttributes<ForwardAttribute>())
             {
-                vm.ForwardProperyChanged(item.Property.Name);
+                foreach (var attribute in item.Attributes)
+                {
+                    vm.ForwardProperyChanged(item.Property.Name, attribute.ForwardedProperties);
+
+                }
             }
         }
     }

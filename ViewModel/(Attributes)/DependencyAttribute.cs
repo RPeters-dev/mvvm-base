@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using MVVM.Base.Extensions;
 
-namespace MVVM.Base.ViewModel._Attributes_
+namespace MVVM.Base.ViewModel
 {
-    [System.AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
     [ViewModelInitializer]
     public class DependencyAttribute : Attribute
     {
