@@ -47,11 +47,18 @@
   <ItemGroup>
     <Compile Include="Command\%28Base%29\Command1.cs" />
     <Compile Include="Command\%28Base%29\Command.cs" />
+    <Compile Include="Command\%28Base%29\ContextMarkupCommand.cs" />
     <Compile Include="Command\%28Base%29\MarkupCommand.cs" />
     <Compile Include="Command\%28Base%29\MarkupCommand1.cs" />
+    <Compile Include="Command\%28Base%29\RoutedCommand.cs" />
+    <Compile Include="Command\%28Event%29\BindingDummy.cs" />
     <Compile Include="Command\%28Event%29\EventBinder.cs" />
+    <Compile Include="Command\%28Event%29\EventBinders.cs" />
+    <Compile Include="Command\%28Event%29\EventBindings.cs" />
     <Compile Include="Command\%28Event%29\EventCommand.cs" />
-    <Compile Include="Command\RefeshViewItem.cs" />
+    <Compile Include="Command\Common\RefeshViewItem.cs" />
+    <Compile Include="Command\Common\SelectFolderCommand.cs" />
+    <Compile Include="Command\Common\SetPropertyCommand.cs" />
     <Compile Include="Converter\%28Base%29\MarkupExtensionConverter.cs" />
     <Compile Include="Converter\BooleanConverter.cs" />
     <Compile Include="Converter\Debug.cs" />
@@ -70,6 +77,7 @@
     <Compile Include="ViewModel\ExtendedPropertyChangedEventArgs.cs" />
     <Compile Include="ViewModel\IRaisePropertyChanged.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
+    <Compile Include="WinUI\OpenFolderDialog.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

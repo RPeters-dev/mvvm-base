@@ -8,7 +8,7 @@ namespace MVVM.Base.ViewModel
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
     public sealed class ViewModelInitializerAttribute : Attribute
     {
-        private int order = int.MaxValue;
+        private int order = 1234;
 
         public int Order { get => order; set => order = value; }
 
