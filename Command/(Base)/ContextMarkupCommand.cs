@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace MVVM.Base
 {
@@ -56,6 +58,29 @@ namespace MVVM.Base
                 }
             }
             return base.ProvideValue(serviceProvider);
+        }
+
+        public object GetValue(Binding b)
+        {
+            if(b == null || TargetInstance == null)
+                return null;
+
+            var dummy = new BindingDummy(TargetInstance.DataContext);
+
+            return dummy.GetValue(b);
+        }
+
+        public T GetValue<T>(object o)
+        {
+            if (o == null || TargetInstance == null)
+                return default;
+
+            if(o is Binding b)
+            {
+                return (T)GetValue(b);
+            }
+
+            return (T)o;
         }
     }
 }
