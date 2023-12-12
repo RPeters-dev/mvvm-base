@@ -7,6 +7,8 @@ namespace MVVM.Base.Models
 {
     public class SelfProvidingMarkupExtension : MarkupExtension, IDisposable
     {
+        public virtual void OnSingleInstaenceInitialize() {}
+
         static Dictionary<Type, object> instances = new Dictionary<Type, object>();
         bool? _SingleInstance;
         /// <summary>
@@ -15,13 +17,18 @@ namespace MVVM.Base.Models
         public bool SingleInstance
         {
             get { return _SingleInstance.GetValueOrDefault(); }
-            set { _SingleInstance = value; if (value && !instances.ContainsKey(GetType())) instances.Add(GetType(), this); }
+            set { _SingleInstance = value; /*if (value && !instances.ContainsKey(GetType())) instances.Add(GetType(), this);*/ }
         }
 
         public void Dispose()
         {
             if (SingleInstance == true)
                 instances.Remove(GetType());
+        }
+
+        public static T Get<T>() where T : SelfProvidingMarkupExtension
+        {
+            return (T)Activator.CreateInstance<T>().ProvideValue(null);
         }
 
         /// <inheritdoc/>
@@ -31,8 +38,8 @@ namespace MVVM.Base.Models
             {
                 if (!instances.TryGetValue(GetType(), out var instance))
                 {
-                    instance = this;
-                    instances[GetType()] = this;
+                    instance= instances[GetType()] = this;
+                    OnSingleInstaenceInitialize();
                 }
 
                 return instance;

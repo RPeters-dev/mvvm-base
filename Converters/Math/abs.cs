@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MVVM.Base.Common.Converters.Math
+namespace MVVM.Base.Common.Converters
 {
     public class abs : MarkupConverter
     {

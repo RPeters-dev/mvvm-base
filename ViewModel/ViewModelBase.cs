@@ -1,7 +1,9 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using MVVM.Base.Models;
@@ -9,11 +11,25 @@ using MVVM.Base.ViewModel;
 
 namespace MVVM.Base
 {
+    public interface IViewModelTarget : INotifyPropertyChanged, IRaisePropertyChanged
+    {
+
+
+    }
     /// <summary>
     /// BAseclass for all ViewModels
     /// </summary>
     public class ViewModelBase : SelfProvidingMarkupExtension, INotifyPropertyChanged, IRaisePropertyChanged
     {
+        public static void SetProperty(object source, string propertyName, object value)
+        {
+            if (source is ViewModelBase vm)
+            {
+                vm.SetProperty(value, propertyName);
+            }
+        }
+
+
         #region INotifyPropertyChanged member
         public virtual event PropertyChangedEventHandler PropertyChanged
         { add { _propertyChanged += value; } remove { _propertyChanged -= value; } }
@@ -44,11 +60,10 @@ namespace MVVM.Base
         /// </summary>
         static ViewModelBase()
         {
-            Initializers  = Assembly.GetAssembly(typeof(ViewModelBase)).GetTypes().Select(t => new { t, attributres = t.GetCustomAttributes<ViewModelInitializerAttribute>() })
+            Initializers = Assembly.GetAssembly(typeof(ViewModelBase)).GetTypes().Select(t => new { t, attributres = t.GetCustomAttributes<ViewModelInitializerAttribute>() })
                 .Where(t => t.attributres.Any()).SelectMany(t => t.t.GetMethods().Select(m => new { m, a = m.GetCustomAttributes<ViewModelInitializerAttribute>().FirstOrDefault() }))
                 .Where(x => x.a != null).OrderBy(x => x.a.Order).Select(x => x.m).ToArray();
         }
-
 
         /// <summary>
         /// Initializes a new Insatnce of <see cref="ViewModelBase"/>
@@ -59,6 +74,8 @@ namespace MVVM.Base
             PropertyChanged += ViewModelBase_PropertyChanged;
             Initialized();
         }
+
+        public object this[string index] { get { return GetProperty<object>(index); } set { Values[index] = value; } }
 
         private void ViewModelBase_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -117,6 +134,18 @@ namespace MVVM.Base
             result.Add(action);
         }
 
+        public static string GetName(Expression<Func<object>> exp)
+        {
+            MemberExpression body = exp.Body as MemberExpression;
+
+            if (body == null)
+            {
+                UnaryExpression ubody = (UnaryExpression)exp.Body;
+                body = ubody.Operand as MemberExpression;
+            }
+
+            return body.Member.Name;
+        }
         /// <summary>
         /// Adds a Dependency for <paramref name="source"/> on every supplier
         /// </summary>
@@ -149,11 +178,38 @@ namespace MVVM.Base
         public void ForwardProperyChanged(string name, params string[] properties)
         {
             if (properties.Any())
-                SetProperty(properties, nameof(ForwardProperyChanged)+"." + name);
+                SetProperty(properties, nameof(ForwardProperyChanged) + "." + name);
 
             UpdateForwardProperyChanged(this, new ExtendedPropertyChangedEventArgs(name, null, GetProperty<object>(name)));
 
             AddPropertyChangedAction(name, UpdateForwardProperyChanged);
+        }
+        /// <summary>
+        /// Only works if the sourceObject is ViewModelBase im too lazy if not 
+        /// </summary>
+        /// <param name="sourceObject"></param>
+        /// <param name="sourceProperty"></param>
+        /// <param name="targetProperty"></param>
+        public void BindProperty(string sourceObject, string sourceProperty, string targetProperty)
+        {
+            this.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == sourceObject && e is ExtendedPropertyChangedEventArgs ex)
+                {
+                    PropertyChangedEventHandler handler = (s1, e1) =>
+                    {
+                        if (e1.PropertyName == sourceProperty)
+                        {
+                            SetProperty((s1 as ViewModelBase).GetProperty<object>(sourceProperty), targetProperty);
+                        }
+                    };
+
+                    if (ex.NewValue is ViewModelBase nv)
+                        nv.PropertyChanged += handler;
+                    if (ex.OldValue is ViewModelBase ov)
+                        ov.PropertyChanged -= handler;
+                }
+            };
         }
 
         /// <summary>
@@ -216,7 +272,7 @@ namespace MVVM.Base
             {
                 string senderName = Values.FirstOrDefault(x => x.Value.Equals(sender)).Key;
                 if (senderName != null &&
-                    GetProperty<string[]>(nameof(ForwardProperyChanged)+ "." + senderName) is string[] ps
+                    GetProperty<string[]>(nameof(ForwardProperyChanged) + "." + senderName) is string[] ps
                     && ps.Length > 0
                     && !ps.Contains(e.PropertyName))
                 {
@@ -238,6 +294,36 @@ namespace MVVM.Base
         /// <returns>value of the property  <paramref name="propertyName"/></returns>
         public T GetProperty<T>(string propertyName) => GetProperty<T>(false, propertyName);
 
+        public T GetAndCastProperty<T>(bool saveResult, [CallerMemberName] string propertyName = "")
+        {
+            if (!Values.ContainsKey(propertyName))
+                return default;
+
+            var originValue = Values[propertyName];
+
+            if (originValue is T)
+            {
+                return (T)originValue;
+            }
+            if (typeof(T).IsEnum)
+                originValue = (T)Enum.Parse(typeof(T), originValue.ToString());
+            else
+                originValue = (T)Convert.ChangeType(originValue, typeof(T));
+
+            if (saveResult)
+                Values[propertyName] = originValue;
+
+            return (T)originValue;
+        }
+
+        //private object TryChangeValueType(object originValue, Type type)
+        //{
+        //    if (type == typeof(int))
+        //    {
+
+        //    }
+        //}
+
         /// <summary>
         /// Gets the value of the property with the given name
         /// </summary>
@@ -245,14 +331,14 @@ namespace MVVM.Base
         /// <param name="initialize">Initializes the value with the defualt constructor if not done</param>
         /// <param name="propertyName">name of the Property</param>
         /// <returns>value of the property  <paramref name="propertyName"/></returns>
-        public T GetProperty<T>(bool initialize = false, [CallerMemberName] string propertyName = "")
+        public T GetProperty<T>(bool initialize = false, [CallerMemberName] string propertyName = "", object initValue = null)
         {
             if (!Values.ContainsKey(propertyName))
             {
                 if (!initialize)
                     return default;
                 else
-                    SetProperty(Activator.CreateInstance<T>(), propertyName);
+                    SetProperty(initValue ?? Activator.CreateInstance<T>(), propertyName);
             }
             return (T)Values[propertyName];
         }
@@ -288,5 +374,8 @@ namespace MVVM.Base
 
         public virtual void Initialized()
         { }
+
+
+        public virtual object Message(object messageValue) { return null; }
     }
 }
