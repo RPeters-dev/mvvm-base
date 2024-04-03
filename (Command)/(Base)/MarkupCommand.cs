@@ -14,7 +14,7 @@
             return CanExecute((T)parameter);
         }
 
-        protected abstract void Execute(T parameter);
+        public abstract void Execute(T parameter);
 
         protected override void Execute(object parameter)
         {

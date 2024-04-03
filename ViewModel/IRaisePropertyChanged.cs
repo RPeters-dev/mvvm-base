@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace MVVM.Base
+namespace MVVM.Base.ViewModel
 {
     /// <summary>
     /// Provides a Method to Raise the <see cref="INotifyPropertyChanged"/> event

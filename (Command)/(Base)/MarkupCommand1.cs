@@ -6,6 +6,8 @@ namespace MVVM.Base
 {
     public abstract class MarkupCommand : MarkupExtension, ICommand
     {
+        public bool ThowsError { get; set; } = false;
+
         #region Events
 
         public event EventHandler CanExecuteChanged
@@ -39,7 +41,15 @@ namespace MVVM.Base
 
         void ICommand.Execute(object parameter)
         {
-            this.Execute(parameter);
+            try
+            {
+                this.Execute(parameter);
+            }
+            catch (Exception ex)
+            {
+                if (ThowsError)
+                    throw ex;
+            }
         }
 
         protected abstract void Execute(object parameter);

@@ -1,5 +1,4 @@
 ﻿using System;
-using MVVM.Base.Extensions;
 
 namespace MVVM.Base.ViewModel
 {

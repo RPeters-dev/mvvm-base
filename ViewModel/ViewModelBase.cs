@@ -6,7 +6,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using MVVM.Base.Models;
 using MVVM.Base.ViewModel;
 
 namespace MVVM.Base
@@ -65,6 +64,10 @@ namespace MVVM.Base
                 .Where(x => x.a != null).OrderBy(x => x.a.Order).Select(x => x.m).ToArray();
         }
 
+        public ViewModelBase(bool singleInstance) : this()
+        {
+            SingleInstance = singleInstance;
+        }
         /// <summary>
         /// Initializes a new Insatnce of <see cref="ViewModelBase"/>
         /// </summary>

@@ -1,4 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace MVVM.Base
@@ -9,11 +13,18 @@ namespace MVVM.Base
 
         protected Predicate<Object> canExecute;
 
+        public bool Async { get; set; }
+
         private event EventHandler CanExecuteChangedInternal;
+
+        internal Command() { }
 
         public Command(Action execute) : this(new Action<object>(delegate (object x) { execute.Invoke(); }))
         {
         }
+
+
+
 
         public Command(Action execute, Predicate<Object> canExecute) : this(new Action<object>(delegate (object x) { execute.Invoke(); }), canExecute)
         {
@@ -40,14 +51,21 @@ namespace MVVM.Base
             remove { CommandManager.RequerySuggested -= value; this.CanExecuteChangedInternal -= value; }
         }
 
-        public bool CanExecute(Object parameter)
+        public virtual bool CanExecute(Object parameter)
         {
             return this.canExecute != null && this.canExecute(parameter);
         }
 
-        public void Execute(Object parameter)
+        public virtual void Execute(Object parameter)
         {
-            this.execute(parameter);
+            if (Async)
+                Task.Factory.StartNew(
+                    execute, parameter,
+                    CancellationToken.None,
+                    TaskCreationOptions.DenyChildAttach,
+                    TaskScheduler.Default);
+            else
+                this.execute(parameter);
         }
 
         public void OnCanExecuteChanged()
