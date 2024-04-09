@@ -19,13 +19,18 @@ namespace MVVM.Base
         private Message _lastMessage;
         private bool _IsRunning;
 
-        public AsyncCommand(Func<Task> function, bool singleInstance = true)
+        public AsyncCommand(Func<Task> function, Func<bool> canExecute = null, bool singleInstance = true)
         {
             Function = function;
             SingleInstance = singleInstance;
+            if (canExecute != null)
+                base.canExecute = (x) => canExecute.Invoke();
+            else
+                base.canExecute = DefaultCanExecute;
 
             Tools.DispatcherExecute(() => { Messages = new SyncObservableCollection<Message>(); });
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -72,7 +77,7 @@ namespace MVVM.Base
         }
         public override bool CanExecute(object parameter)
         {
-            return !IsRunning;
+            return !IsRunning && base.CanExecute(parameter);
         }
         public override void Execute(object parameter)
         {
@@ -82,11 +87,11 @@ namespace MVVM.Base
                 IsRunning = true;
                 task.GetAwaiter().OnCompleted(() =>
                 {
-                    TaskID = null;
                     IsRunning = false;
                     CommandManager.InvalidateRequerySuggested();
 
                     ActiveCommands.Remove(TaskID.Value);
+                    TaskID = null;
 
                     if (!KeepMessages)
                     {

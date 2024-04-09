@@ -11,7 +11,7 @@ namespace MVVM.Base
     {
         public Action<Object> execute;
 
-        protected Predicate<Object> canExecute;
+        public Predicate<Object> canExecute;
 
         public bool Async { get; set; }
 
@@ -22,9 +22,6 @@ namespace MVVM.Base
         public Command(Action execute) : this(new Action<object>(delegate (object x) { execute.Invoke(); }))
         {
         }
-
-
-
 
         public Command(Action execute, Predicate<Object> canExecute) : this(new Action<object>(delegate (object x) { execute.Invoke(); }), canExecute)
         {
@@ -75,7 +72,7 @@ namespace MVVM.Base
                 handler.Invoke(this, EventArgs.Empty);
         }
 
-        private static bool DefaultCanExecute(Object parameter)
+        protected static bool DefaultCanExecute(Object parameter)
         {
             return true;
         }
