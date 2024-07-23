@@ -9,7 +9,7 @@ namespace MVVM.Base
         public virtual object NullValue { get; set; } = false;
         public virtual object FalseValue { get; set; } = false;
 
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertOverride(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)
                 return NullValue;
@@ -20,7 +20,7 @@ namespace MVVM.Base
             return FalseValue;
         }
 
-        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertBackOverride(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == NullValue)
                 return null;

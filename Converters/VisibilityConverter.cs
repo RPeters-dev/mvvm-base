@@ -15,9 +15,7 @@ namespace MVVM.Base
 
                 if (value.HasFlag(VisibilityConverterMode.Inverted))
                 {
-                    var ot = TrueValue;
-                    TrueValue = FalseValue;
-                    FalseValue = ot;
+                    (FalseValue, TrueValue)=(TrueValue, FalseValue);
                 }
             }
         }
