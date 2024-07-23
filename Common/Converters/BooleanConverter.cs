@@ -28,9 +28,9 @@ namespace MVVM.Base.Common.Converters
 
         public virtual object TrueValue { get => ValueProvider.TrueValue; set => ValueProvider.TrueValue = value; }
         public virtual object NullValue { get => ValueProvider.NullValue; set => ValueProvider.NullValue = value; } 
-        public virtual object FalseValue { get => ValueProvider.FalseValue; set => ValueProvider.FalseValue = value; } 
+        public virtual object FalseValue { get => ValueProvider.FalseValue; set => ValueProvider.FalseValue = value; }
 
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertOverride(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)
                 return NullValue;
@@ -41,7 +41,7 @@ namespace MVVM.Base.Common.Converters
             return FalseValue;
         }
 
-        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertBackOverride(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == NullValue)
                 return null;

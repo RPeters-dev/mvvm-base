@@ -17,7 +17,7 @@ namespace MVVM.Base.Common.Converters.Math
 
         public int Modulo { get; set; }
 
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertOverride(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is Int32 int32val)
                 return int32val % Modulo;
