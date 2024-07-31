@@ -78,6 +78,7 @@
     <Compile Include="Common\Converters\VisibilityConverter.cs" />
     <Compile Include="Common\Converters\VisibillityConverterMode.cs" />
     <Compile Include="Common\MarkupExtensions\DebuggerAttached.cs" />
+    <Compile Include="Common\MarkupExtensions\EnumNames.cs" />
     <Compile Include="Common\MarkupExtensions\xCursor.cs" />
     <Compile Include="%28Extensions%29\ICollectionExtension.cs" />
     <Compile Include="%28Extensions%29\TypeExtensions.cs" />
