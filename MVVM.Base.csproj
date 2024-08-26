@@ -34,6 +34,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -71,6 +72,8 @@
     <Compile Include="Common\Converters\BooleanConverter.cs" />
     <Compile Include="Common\Converters\Debug.cs" />
     <Compile Include="Common\Converters\Math\ModuloConverter.cs" />
+    <Compile Include="Common\Converters\RelativeBitMapSourceConverter.cs" />
+    <Compile Include="Common\Converters\RelativeUriConverter.cs" />
     <Compile Include="Common\Converters\VisibilityToBoolConverter.cs" />
     <Compile Include="Common\MarkupExtensions\%28Values%29\xbool.cs" />
     <Compile Include="Common\MarkupExtensions\DebugVisible.cs" />
