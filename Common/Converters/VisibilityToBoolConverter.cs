@@ -27,7 +27,7 @@ namespace MVVM.Base.Common.Converters
             return CollapsedResult;
         }
 
-        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertBackOverride(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var boolValue = value as bool?;
 

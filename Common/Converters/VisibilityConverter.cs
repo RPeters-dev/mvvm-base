@@ -31,9 +31,7 @@ namespace MVVM.Base.Common.Converters
 
                 if (value.HasFlag(VisibilityConverterMode.Inverted))
                 {
-                    var ot = TrueValue;
-                    TrueValue = FalseValue;
-                    FalseValue = ot;
+                    (FalseValue, TrueValue)=(TrueValue, FalseValue);
                 }
             }
             get { return _Mode; }

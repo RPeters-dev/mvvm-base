@@ -9,7 +9,7 @@ namespace MVVM.Base.Common.Converters
 {
     public class IsNullOrWhiteSpaceConverter : BooleanConverter
     {
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertOverride(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)
                 return TrueValue;
