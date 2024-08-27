@@ -53,6 +53,8 @@
     <Compile Include="%28Command%29\%28Base%29\MarkupCommand.cs" />
     <Compile Include="%28Command%29\%28Base%29\MarkupCommand1.cs" />
     <Compile Include="%28Command%29\%28Base%29\RoutedCommand.cs" />
+    <Compile Include="%28Command%29\%28Common%29\Text\ClearCommand.cs" />
+    <Compile Include="%28Command%29\%28Common%29\Text\CopyCommand.cs" />
     <Compile Include="%28Command%29\%28Event%29\%28Helper%29\RepeatedExecutionCommand.cs" />
     <Compile Include="%28Command%29\%28Event%29\BindingDummy.cs" />
     <Compile Include="%28Command%29\%28Event%29\EventBinder.cs" />

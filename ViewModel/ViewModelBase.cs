@@ -12,21 +12,70 @@ namespace MVVM.Base
 {
     public interface IViewModelTarget : INotifyPropertyChanged, IRaisePropertyChanged
     {
-
-
+     
     }
+    public class ModelBase : IViewModelTarget
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void RaisePropertyChanged([CallerMemberName] string p = "") => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(p));
+
+        /// <summary>
+        /// Contains all values of the VM
+        /// </summary>
+        public Dictionary<string, object> Values { get; private set; } = new Dictionary<string, object>();
+
+        /// <summary>
+        /// Gets the value of the property with the given name
+        /// </summary>
+        /// <typeparam name="T">Type of the Property</typeparam>
+        /// <param name="initialize">Initializes the value with the defualt constructor if not done</param>
+        /// <param name="propertyName">name of the Property</param>
+        /// <returns>value of the property  <paramref name="propertyName"/></returns>
+        public T GetProperty<T>(bool initialize = false, [CallerMemberName] string propertyName = "", object initValue = null)
+        {
+            if (!Values.ContainsKey(propertyName))
+            {
+                if (!initialize)
+                    return default;
+                else
+                    SetProperty(initValue ?? Activator.CreateInstance<T>(), propertyName);
+            }
+            return (T)Values[propertyName];
+        }
+
+        /// <summary>
+        /// Sets the value of a Property
+        /// </summary>
+        /// <param name="value">the new Value</param>
+        /// <param name="propertyName">the name of the property</param>
+        public void SetProperty(object value, [CallerMemberName] string propertyName = "")
+        {
+            Values.TryGetValue(propertyName, out var oldValue);
+
+            if (oldValue == value)
+                return;
+
+            Values[propertyName] = value;
+            RaisePropertyChanged(propertyName, oldValue, value);
+        }
+
+        public void RaisePropertyChanged([CallerMemberName] string _propertyName = "", object oldValue = null, object newValue = null)
+        {
+            var pce = new ExtendedPropertyChangedEventArgs(_propertyName, oldValue, newValue);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, pce);
+            }
+        }
+    }
+
+
     /// <summary>
-    /// BAseclass for all ViewModels
+    /// Baseclass for all ViewModels
     /// </summary>
     public class ViewModelBase : SelfProvidingMarkupExtension, INotifyPropertyChanged, IRaisePropertyChanged
     {
-        public static void SetProperty(object source, string propertyName, object value)
-        {
-            if (source is ViewModelBase vm)
-            {
-                vm.SetProperty(value, propertyName);
-            }
-        }
+
 
 
         #region INotifyPropertyChanged member
@@ -374,7 +423,13 @@ namespace MVVM.Base
             RaisePropertyChanged(propertyName, oldValue, value);
         }
 
-
+        public static void SetProperty(object source, string propertyName, object value)
+        {
+            if (source is ViewModelBase vm)
+            {
+                vm.SetProperty(value, propertyName);
+            }
+        }
         public virtual void Initialized()
         { }
 
