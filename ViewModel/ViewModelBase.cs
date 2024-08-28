@@ -22,7 +22,7 @@ namespace MVVM.Base
         /// <summary>
         /// Contains all values of the VM
         /// </summary>
-        public Dictionary<string, object> Values { get; private set; } = new Dictionary<string, object>();
+        private Dictionary<string, object> values = new Dictionary<string, object>();
 
         /// <summary>
         /// Gets the value of the property with the given name
@@ -33,14 +33,14 @@ namespace MVVM.Base
         /// <returns>value of the property  <paramref name="propertyName"/></returns>
         public T GetProperty<T>(bool initialize = false, [CallerMemberName] string propertyName = "", object initValue = null)
         {
-            if (!Values.ContainsKey(propertyName))
+            if (!values.ContainsKey(propertyName))
             {
                 if (!initialize)
                     return default;
                 else
                     SetProperty(initValue ?? Activator.CreateInstance<T>(), propertyName);
             }
-            return (T)Values[propertyName];
+            return (T)values[propertyName];
         }
 
         /// <summary>
@@ -50,12 +50,12 @@ namespace MVVM.Base
         /// <param name="propertyName">the name of the property</param>
         public void SetProperty(object value, [CallerMemberName] string propertyName = "")
         {
-            Values.TryGetValue(propertyName, out var oldValue);
+            values.TryGetValue(propertyName, out var oldValue);
 
             if (oldValue == value)
                 return;
 
-            Values[propertyName] = value;
+            values[propertyName] = value;
             RaisePropertyChanged(propertyName, oldValue, value);
         }
 

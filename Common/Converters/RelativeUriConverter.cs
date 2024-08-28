@@ -10,7 +10,7 @@ namespace MVVM.Base.Common.Converters
 {
     public class RelativeUriConverter : MarkupConverter
     {
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object ConvertOverride(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is Uri)
             {
