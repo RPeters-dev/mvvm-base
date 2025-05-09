@@ -13,7 +13,7 @@ namespace MVVM.Base
         protected override void Execute(object parameter)
         {
 
-            OpenFolderDialog fd = new OpenFolderDialog();
+            var fd = new MVVM.Base.WinUI.OpenFolderDialog();
             fd.DirectoryPath = parameter?.ToString();
             if (fd.ShowDialog() != true)
                 return;
