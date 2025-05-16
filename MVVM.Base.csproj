@@ -37,6 +37,7 @@
 	  <Compile Include="%28Command%29\Debug.cs" />
 	  <Compile Include="%28Extensions%29\ICollectionExtension.cs" />
 	  <Compile Include="%28Extensions%29\TypeExtensions.cs" />
+	  <Compile Include="Properties\AssemblyInfo.cs" />
 	  <Compile Include="Common\Converters\%28Base%29\MarkupConverter.cs" />
 	  <Compile Include="Common\Converters\%28String%29\IsNullOrWhiteSpaceConverter.cs" />
 	  <Compile Include="Common\Converters\BooleanConverter.cs" />
