@@ -9,9 +9,9 @@ namespace MVVM.Base.Common.MarkupExtensions
 {
 
     [MarkupExtensionReturnType(typeof(int))]
-    public class xint : MarkupExtension
+    public class xInt : MarkupExtension
     {
-        public xint(int value)
+        public xInt(int value)
         {
             Value = value;
         }

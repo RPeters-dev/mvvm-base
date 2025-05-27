@@ -7,12 +7,12 @@ namespace MVVM.Base.Common.Converters
 { 
     public abstract class MarkupConverter<T> : MarkupConverter
     {
-        public abstract object Convert(T value, Type targetType, object parameter, CultureInfo culture);
+        public abstract new object Convert(T value, Type targetType, object parameter, CultureInfo culture);
 
 
         public override object ConvertOverride(object value, Type targetType, object parameter, CultureInfo culture)
         {
-              return Convert(value is T ? (T)value : default(T), targetType, parameter, culture);
+              return Convert(value is T t ? t : default, targetType, parameter, culture);
         }
     }
 

@@ -34,7 +34,7 @@ namespace MVVM.Base.ViewModel
 
         public static async Task<T> GetAsync<T>() where T : SelfProvidingMarkupExtension
         {
-            return Get<T>();
+            return await Task.Run(() => Get<T>());
         }
 
         /// <inheritdoc/>

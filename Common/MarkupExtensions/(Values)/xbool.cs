@@ -8,9 +8,9 @@ using System.Windows.Markup;
 namespace MVVM.Base.Common.MarkupExtensions
 {
     [MarkupExtensionReturnType(typeof(bool))]
-    public class xbool : MarkupExtension
+    public class xBool : MarkupExtension
     {
-        public xbool(bool value)
+        public xBool(bool value)
         {
             Value = value;
         }
