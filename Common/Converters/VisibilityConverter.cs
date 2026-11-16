@@ -24,6 +24,9 @@ namespace MVVM.Base.Common.Converters
                 if (value.HasFlag(VisibilityConverterMode.Collapsing))
                 {
                     FalseValue = Visibility.Collapsed;
+                }else if (value.HasFlag(VisibilityConverterMode.Hide))
+                {
+                    FalseValue = Visibility.Hidden;
                 }
 
                 if (value.HasFlag(VisibilityConverterMode.Inverted))
@@ -37,8 +40,8 @@ namespace MVVM.Base.Common.Converters
         public ConverterValuesVisibility()
         {
             TrueValue = Visibility.Visible;
-            FalseValue = Visibility.Hidden;
-            NullValue = Visibility.Collapsed;
+            FalseValue = Visibility.Collapsed;
+            NullValue = Visibility.Hidden;
         }
     }
 
@@ -46,9 +49,12 @@ namespace MVVM.Base.Common.Converters
     {
         public VisibilityConverter()
         {
-            ValueProvider = new BooleanConverter_ValueProvider();
+            ValueProvider = new ConverterValuesVisibility();
         }
 
-        public new BooleanConverter_ValueProvider ValueProvider { get => base.ValueProvider; set => base.ValueProvider = value; }
+        public VisibilityConverterMode Mode { set => ValueProvider.Mode = value; }
+        public bool Inverted { set => ValueProvider.Inverted = value; }
+
+        public new ConverterValuesVisibility ValueProvider { get => (ConverterValuesVisibility)base.ValueProvider; set => base.ValueProvider = value; }
     }
 }

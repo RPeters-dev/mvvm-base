@@ -44,10 +44,20 @@ namespace MVVM.Base.WinUI
             }
             finally
             {
-                Marshal.ReleaseComObject(dialog);
+#if NET8_0_OR_GREATER
+                if (OperatingSystem.IsWindows() && Marshal.IsComObject(dialog))
+                {   
+                    Marshal.ReleaseComObject(dialog);
+                }
+#else
+                if (Marshal.IsComObject(dialog))
+                {
+                    Marshal.ReleaseComObject(dialog);
+                }
+#endif
             }
         }
-        #endregion
+#endregion
 
         #region BaseType
         [DllImport("shell32.dll")]
@@ -142,5 +152,5 @@ namespace MVVM.Base.WinUI
         }
         #endregion
     }
-    #endregion
+#endregion
 }

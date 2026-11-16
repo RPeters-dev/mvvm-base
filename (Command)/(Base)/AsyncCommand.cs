@@ -65,14 +65,17 @@ namespace MVVM.Base
 
         public bool ThrowsError { get; set; }
 
-        public static async void PostMessage(string message)
+        public static async Task PostMessage(string message)
         {
             if (Task.CurrentId == null)
                 return;
 
             if (ActiveCommands.TryGetValue(Task.CurrentId.Value, out var index))
             {
-                index.Messages.Add(index.LastMessage = new Message(message));
+                await Task.Run(() =>
+                {
+                    index.Messages.Add(index.LastMessage = new Message(message));
+                });
             }
         }
         public override bool CanExecute(object parameter)

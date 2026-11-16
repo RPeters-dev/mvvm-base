@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MVVM.Base.Common.Converters.Math
 {
-    public class abs : MarkupConverter
+    public class Abs : MarkupConverter
     {
         public override object ConvertOverride(object value, Type targetType, object parameter, CultureInfo culture)
         {

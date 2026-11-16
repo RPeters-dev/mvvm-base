@@ -15,6 +15,7 @@ namespace MVVM.Base
         static Config()
         {
             Instance = Get<Config>();
+            Dispatcher = Dispatcher.CurrentDispatcher;
         }
 
         public Config() : base(true)

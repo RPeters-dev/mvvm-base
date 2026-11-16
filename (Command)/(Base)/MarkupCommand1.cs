@@ -6,7 +6,7 @@ namespace MVVM.Base
 {
     public abstract class MarkupCommand : MarkupExtension, ICommand
     {
-        public bool ThowsError { get; set; } = false;
+        public bool ThrowsError { get; set; } = false;
 
         #region Events
 
@@ -45,10 +45,10 @@ namespace MVVM.Base
             {
                 this.Execute(parameter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                if (ThowsError)
-                    throw ex;
+                if (ThrowsError)
+                    throw;
             }
         }
 
